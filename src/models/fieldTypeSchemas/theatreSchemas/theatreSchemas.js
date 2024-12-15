@@ -20,7 +20,7 @@ export const contactSchema = new mongoose.Schema(
     phoneNumbers: [
       {
         type: { type: String, required: true },
-        number: { type: String, required: true },
+        number: { type: String, required: true, unique: true },
       },
     ],
     emails: [
@@ -32,7 +32,6 @@ export const contactSchema = new mongoose.Schema(
         },
         email: {
           type: String,
-          enum: ["Support", "Inquiry"],
           required: true,
           unique: true,
         },
