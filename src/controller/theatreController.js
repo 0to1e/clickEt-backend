@@ -1,13 +1,13 @@
 import { Theatre } from "../models/theatresModel.js";
 
 export async function addTheatre(request, response) {
-  const  Theatre_details  = request.body;
+  const  theatre_details  = request.body;
     
   try {
-    const Theatre = await Theatre.create(Theatre_details);
+    const theatre = await Theatre.create(theatre_details);
     return response.status(201).json({
       message: "Theatre added successfully.",
-      Theatre: Theatre,
+      Theatre: theatre,
     });
   } catch (error) {
     console.error(`Error Adding Theatre:${error.message}`);
@@ -21,16 +21,16 @@ export async function checkUniqueTheatres(request, response) {
   const { name } = request.body;
 
   try {
-    const Theatre = await Theatre.find({ name: name });
-    if (Theatre.length > 0) {
+    const theatre = await Theatre.find({ name: name });
+    if (theatre.length > 0) {
       return response.status(409).json({
         message: "Theatre already exists.",
-        Theatre: Theatre,
+        theatre: theatre,
       });
     }
-    return response.status(200).json({ message: "Unique Theatre." });
+    return response.status(200).json({ message: "Unique theatre." });
   } catch (error) {
-    console.error(`Error Checking unique Theatre:${error.message}`);
+    console.error(`Error Checking unique theatre:${error.message}`);
     return response
       .status(500)
       .json({ message: "Internal Server Error. Check console for details" });
@@ -39,9 +39,9 @@ export async function checkUniqueTheatres(request, response) {
 
 export async function getAllTheatres(request, response) {
   try {
-    const Theatres = await Theatre.find({});
-    if (Theatres.length !== 0) {
-      return response.status(200).json({ Theatres: Theatres });
+    const theatres = await Theatre.find({});
+    if (theatres.length !== 0) {
+      return response.status(200).json({ theatres: theatres });
     }
     return response.status(204).json({ message: "No Theatres available." });
   } catch (error) {
@@ -54,9 +54,9 @@ export async function getAllTheatres(request, response) {
 export async function getTheatreByName(request, response) {
   const { name } = request.body;
   try {
-    const Theatre = await Theatre.find({ name: name });
-    if (Theatre.length !== 0) {
-      return response.status(200).json({ Theatre: Theatre });
+    const theatre = await Theatre.find({ name: name });
+    if (theatre.length !== 0) {
+      return response.status(200).json({ theatre: theatre });
     }
     return response
       .status(204)
@@ -68,29 +68,32 @@ export async function getTheatreByName(request, response) {
       .json({ message: "Internal Server Error. Check console for details" });
   }
 }
-export async function getTheatresByLocation(request, response) {
-  const { location } = request.body;
+
+export const getTheatresByAddress = async (request, res) => {
   try {
-    const Theatres = await Theatre.find({ location: location });
-    if (Theatres.length !== 0) {
-      return response.status(200).json({ Theatres: Theatres });
+    const { address } = request.body;
+    const theatres = await Theatre.find({
+      "location.address": address, 
+    });
+
+    if (theatres.length === 0) {
+      return res.status(204).json({ message: "No theatres found for this address." });
     }
-    return response
-      .status(204)
-      .json({ message: "No Theatre available for this location." });
-  } catch (error) {
-    console.error(`Error Fetching Theatres:${error.message}`);
-    return response
-      .status(500)
-      .json({ message: "Internal Server Error. Check console for details" });
+
+    res.status(200).json(theatres);
+  } catch (err) {
+    // Handle any potential errors
+    console.error(err);
+    res.status(500).json({ message: "An error occurred while fetching theatres." });
   }
-}
+};
+
 export async function getTheatresbyStatus(request, response) {
   const { isActive } = request.params;
   try {
-    const Theatres = await Theatre.find({ isActive: isActive });
-    if (Theatres.length !== 0) {
-      return response.status(200).json({ Theatres: Theatres });
+    const theatres = await Theatre.find({ isActive: isActive });
+    if (theatres.length !== 0) {
+      return response.status(200).json({ theatres: theatres });
     }
     return response
       .status(204)
@@ -121,9 +124,9 @@ export async function updateTheatre(request, response) {
       return response.status(404).json({ message: "Theatre not found." });
     }
 
-    return response.status(200).json({ Theatre: updatedTheatre });
+    return response.status(200).json({ theatre: updatedTheatre });
   } catch (error) {
-    console.error(`Error updating Theatre: ${error.message}`);
+    console.error(`Error updating theatre: ${error.message}`);
     return response.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -139,10 +142,10 @@ export async function deleteTheatre(request, response) {
     }
     return response.status(200).json({
       message: "Theatre deleted successfully.",
-      Theatre: deletedTheatre,
+      theatre: deletedTheatre,
     });
   } catch (error) {
-    console.error(`Error deleting Theatre: ${error.message}`);
+    console.error(`Error deleting theatre: ${error.message}`);
     return response
       .status(500)
       .json({ message: "Internal Server Error. Check console for details" });

@@ -1,0 +1,88 @@
+{
+    "name": "Big Movies NP",
+    "locations": [
+        {
+            "type": "HQ",
+            "location": "Kathnamdu",
+            "coordinates": {
+                "latitude": 384,
+                "longitude": 384
+            }
+        },
+        {
+            "type": "Branch",
+            "location": "Pokhara",
+            "coordinates": {
+                "latitude": 385,
+                "longitude": 386
+            }
+        }
+    ],
+    "contacts": [
+        {
+            "type": "Branch",
+            "location": "Pokhara",
+            "phoneNumbers": [
+                {
+                    "type": "Personal",
+                    "number": 9860452132
+                },
+                {
+                    "type": "Support",
+                    "number": 98604624785
+                }
+            ],
+            "emails": [
+                {
+                    "type": "Support",
+                    "email": "support.pokhara@bigmovies.com.np"
+                },
+                {
+                    "type": "Inquiry",
+                    "email": "inquiry.pokhara@bigmovies.com.np"
+                }
+            ]
+        },
+        {
+            "type": "HQ",
+            "phoneNumbers": [
+                {
+                    "type": "Personal",
+                    "number": 9860452132
+                },
+                {
+                    "type": "Support",
+                    "number": 98604624785
+                }
+            ],
+            "emails": [
+                {
+                    "type": "Support",
+                    "email": "support.ktm@bigmovies.com.np"
+                },
+                {
+                    "type": "Inquiry",
+                    "email": "inquiry.ktm@bigmovies.com.np"
+                }
+            ]
+        }
+    ],
+    "commissionRate":10,
+    "distributionRights": [
+        {
+            "movieId": 1001,
+            "commissionRate":"10",
+            "locations":["Kathmandu, Pokhara"],
+            "validFrom": "date",
+            "validUntil": "date"
+        },
+        {
+            "movieId": 1002,
+            "locations":["Kathmandu, Pokhara", "Chitwan"],
+            "commissionRate":15,
+            "validFrom": "date",
+            "validUntil": "date"
+        }
+    ],
+    "isActive":true
+}

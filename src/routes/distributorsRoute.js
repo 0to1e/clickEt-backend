@@ -14,7 +14,6 @@ import {
 const router = express.Router();
 
 router.post("/add", validationRules, 
-  // validateDistributor
   commonlyUsedValidationResult
   , addDistributor);
 

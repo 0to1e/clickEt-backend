@@ -15,15 +15,15 @@ export const validationRules = [
     .isArray({ min: 1 })
     .withMessage("At least one location is required")
     .custom((locations) => {
-      locations.forEach((loc) => {
-        if (!["HQ", "Branch"].includes(loc.type)) {   // Enum
+      locations.forEach((location) => {
+        if (!["HQ", "Branch"].includes(location.type)) {   // Enum
           throw new Error("Invalid location type");
         }
-        if (!loc.location) {
+        if (!location.location) {
           throw new Error("Location name is required");
         }
-        if (loc.coordinates) {
-          if (!loc.coordinates.latitude || !loc.coordinates.longitude) {
+        if (location.coordinates) {
+          if (!location.coordinates.latitude || !location.coordinates.longitude) {
             throw new Error("Valid coordinates are required");
           }
         }
@@ -33,6 +33,7 @@ export const validationRules = [
 
   body("contacts")
     .isArray()
+    .withMessage("Contact must be an array")
     .custom((contacts) => {
       contacts.forEach((contact) => {
         if (!["HQ", "Branch"].includes(contact.type)) {     // Enum
@@ -54,7 +55,7 @@ export const validationRules = [
 
         if (contact.emails) {
           contact.emails.forEach((email) => {
-            if (!["Support", "Inquiry"].includes(email.type)) {      // Enum
+            if (!["support", "inquiry"].includes(email.type)) {      // Enum
               // Enum
               throw new Error("Invalid email type");
             }

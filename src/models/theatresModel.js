@@ -10,8 +10,8 @@ const theatreSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    location: [locationSchema],
-    contact: [contactSchema],
+    locations: [locationSchema],
+    contacts: [contactSchema],
     hallIds: [
       {
         type: mongoose.Types.ObjectId,

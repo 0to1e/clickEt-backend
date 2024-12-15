@@ -1,67 +1,71 @@
 import { body, validationResult } from "express-validator";
-
+import {isValidPhoneNumber} from 'libphonenumber-js'
 export const validateTheatre = [
   body("name")
     .trim()
     .escape()
-    .isString()
-    .withMessage("The name must be a string")
     .notEmpty()
-    .withMessage("The name is required"),
+    .withMessage("Theatre's name is required")
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters"),
 
-  body("location")
+  body("locations")
     .isArray()
     .withMessage("Location must be an array")
     .custom((locations) => {
       locations.forEach((location) => {
         if (!location.address) {
-          throw new Error("Location address is required");
+          throw new Error("Location's address is required");
         }
-        if (
-          !location.coordinates ||
-          !location.coordinates.latitude ||
-          !location.coordinates.longitude
-        ) {
-          throw new Error(
-            "Location must include valid coordinates (latitude and longitude)"
-          );
+        if (location.coordinates) {
+          if (
+            !location.coordinates.latitude ||
+            !location.coordinates.longitude
+          ) {
+            throw new Error(
+              "Location must include valid coordinates (latitude and longitude)"
+            );
+          }
         }
       });
       return true;
     }),
 
-  // Validate contact array - at least one contact with address, phone numbers, and emails
-  body("contact")
+  body("contacts")
     .isArray()
     .withMessage("Contact must be an array")
-    .notEmpty()
-    .withMessage("At least one contact is required")
     .custom((contacts) => {
       contacts.forEach((contact) => {
-        if (!contact.address) {
-          throw new Error("Contact address is required");
+        if (contact.phoneNumbers) {
+          contact.phoneNumbers.forEach((phone) => {
+            if (!["support", "inquiry"].includes(phone.type)) {
+              // Enum
+              throw new Error("Invalid phone number type");
+            }
+            if (!phone.number || !isValidPhoneNumber(phone.number, "NP")) {
+              throw new Error("Invalid phone number");
+            }
+          });
         }
-        if (!contact.phoneNumbers || contact.phoneNumbers.length === 0) {
-          throw new Error("Contact must have at least one phone number");
+
+        if (contact.emails) {
+          contact.emails.forEach((email) => {
+            if (!["support", "inquiry"].includes(email.type)) {
+              // Enum
+              // Enum
+              throw new Error("Invalid email type");
+            }
+            if (
+              !email.email.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)
+            ) {
+              throw new Error("Invalid email format");
+            }
+          });
         }
-        contact.phoneNumbers.forEach((phone) => {
-          if (!phone.type || !phone.number) {
-            throw new Error("Phone number type and number are required");
-          }
-        });
-        if (!contact.emails || contact.emails.length === 0) {
-          throw new Error("Contact must have at least one email");
-        }
-        contact.emails.forEach((email) => {
-          if (!email.type || !email.email) {
-            throw new Error("Email type and email address are required");
-          }
-        });
       });
       return true;
     }),
 
-  // Validate hallIds - an array of ObjectIds (optional)
   body("hallIds")
     .optional()
     .isArray()
@@ -75,7 +79,6 @@ export const validateTheatre = [
       return true;
     }),
 
-  // Validate commissionRate array - each should have an address and rate
   body("commissionRate")
     .isArray()
     .withMessage("commissionRate must be an array")
@@ -91,7 +94,6 @@ export const validateTheatre = [
       return true;
     }),
 
-  // Validate isActive - boolean value
   body("isActive")
     .isBoolean()
     .withMessage("isActive must be a boolean")

@@ -1,5 +1,5 @@
 import { coordinatesSchema } from "../common/coordinateSchema.js";
-
+import mongoose from "mongoose";
 export const locationSchema = new mongoose.Schema(
   {
     address: {
@@ -19,15 +19,23 @@ export const contactSchema = new mongoose.Schema(
     address: { type: String, required: true },
     phoneNumbers: [
       {
-        type: { type: String, required: true },
-        number: { type: String, required: true, unique: true },
+        type: {
+          type: String,
+          enum: ["inquiry", "support"],
+          required: true,
+        },
+        number: {
+          type: String,
+          required: true,
+          unique: true,
+        },
       },
     ],
     emails: [
       {
         type: {
           type: String,
-          enum: ["Support", "Inquiry"],
+          enum: ["support", "inquiry"],
           required: true,
         },
         email: {

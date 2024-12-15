@@ -18,7 +18,7 @@ const emailSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["Inquiry", "Support"],
+    enum: ["inquiry", "support"],
   },
   email: {
     type: String,

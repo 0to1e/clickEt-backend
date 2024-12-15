@@ -1,0 +1,82 @@
+{
+    "name": "City Center",
+    "locations": [
+        {
+            "address": "Kamalpokhari",
+            "coordinates": {
+                "latitude": 101010,
+                "longitude": 101010
+            }
+        },
+        {
+            "address": "Kakadvitta, Jhapa",
+            "coordinates": {
+                "latitude": 202020,
+                "longitude": 202020
+            }
+        }
+    ],
+    "contacts": [
+        {
+            "address": "Kamalpokhari",
+            "phoneNumbers": [
+                {
+                    "type": "Inquiry",
+                    "number": "+977-9860452132"
+                },
+                {
+                    "type": "Support",
+                    "number": "+977-98604624785"
+                }
+            ],
+            "emails": [
+                {
+                    "type": "Support",
+                    "email": "support.kamalpokhari@citycenter.com.np"
+                },
+                {
+                    "type": "Inquiry",
+                    "email": "inquiry.kamalpokhari@citycenter.com.np"
+                }
+            ]
+        },
+        {
+            "address": "Kakadvitta, Jhapa",
+            "phoneNumbers": [
+                {
+                    "type": "Personal",
+                    "number": "+977-9860452132"
+                },
+                {
+                    "type": "Support",
+                    "number": "+977-98604624785"
+                }
+            ],
+            "emails": [
+                {
+                    "type": "Support",
+                    "email": "support.jhapa@citycenter.com.np"
+                },
+                {
+                    "type": "Inquiry",
+                    "email": "inquiry.jhapa@citycenter.com.np"
+                }
+            ]
+        }
+    ],
+    "hallIds": [
+        1,
+        2
+    ],
+    "commissionRates": [
+        {
+            "address": "Kamalpokhari",
+            "rate": 10
+        },
+        {
+            "address": "Kakadvitta, Jhapa",
+            "rate": 15
+        }
+    ],
+    "isActive": true
+}
