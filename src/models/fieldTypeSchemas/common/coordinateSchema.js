@@ -1,4 +1,4 @@
-import mongooseko from "mongoose";
+import mongoose from "mongoose";
 
 export const coordinatesSchema = new mongoose.Schema(
   {
