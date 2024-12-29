@@ -6,10 +6,9 @@ export const app = express();
 
 const corsOptions = {
   origin: [`http://localhost${process.env.FRONTPORT}`],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  // exposedHeaders: ['Custom-Header'], // Exposed headers
-  credentials: true, // Whether to allow credentials (cookies, authorization headers)
+  credentials: true,
   // maxAge: 3600, // Maximum age of the preflight request cache
 };
 const apiVersion = "/api/v1";

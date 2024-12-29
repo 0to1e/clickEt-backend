@@ -21,6 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "libphonenumber-js": "^1.11.14",
     "mongoose": "^8.8.2",
-    "nodemon": "^3.1.7"
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.7",
+    "winston": "^3.17.0"
   }
 }

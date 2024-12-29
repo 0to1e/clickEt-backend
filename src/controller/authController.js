@@ -1,12 +1,10 @@
 import User from "../models/userModel.js";
-import { generateCookie } from "../utils/cookieUtil.js";
-
+import crypto from "crypto";
+import { setTokenCookie } from "../utils/cookieUtil.js";
 export async function initRegistration(request, response) {
-  const { full_name, user_name, phone_number, email, password } =
-    request.body;
+  const { full_name, user_name, phone_number, email, password } = request.body;
 
   try {
-    
     const user = await User.create({
       full_name,
       user_name,
@@ -16,18 +14,17 @@ export async function initRegistration(request, response) {
     });
 
     user.password = undefined;
-    
-    await generateCookie(response, user);
-    
-    return response
-      .status(201)
-      .json({ message: "User created successfully", user: user });
-  } 
-  
-  
-  
-  
-  catch (error) {
+    const accessToken = await user.generateJWTToken();
+    const refreshToken = await user.generateRefreshToken();
+    setRefreshTokenCookie(response, refreshToken);
+
+    return response.status(201).json({
+      message: "User created successfully",
+      user: user,
+      accessToken,
+      refreshToken,
+    });
+  } catch (error) {
     console.error(`Registration Error:${error.message}`);
     return response
       .status(500)
@@ -35,8 +32,8 @@ export async function initRegistration(request, response) {
   }
 }
 
-export async function initAuthentication(requestuest, response) {
-  const { user_name, password } = requestuest.body;
+export async function initAuthentication(request, response) {
+  const { user_name, password } = request.body;
 
   try {
     const user = await User.findOne({
@@ -46,9 +43,14 @@ export async function initAuthentication(requestuest, response) {
     if (user) {
       const authResult = await user.comparePassword(password);
       if (authResult) {
-        user.password = undefined;
-        const cookie = await generateCookie(response, user);
-        return response.status(200).json({ message: "Login Successful" });
+        const accessToken = await user.generateJWTToken();
+        const refreshToken = await user.generateRefreshToken();
+        setTokenCookie(response, "refresh_token", refreshToken);
+        setTokenCookie(response, "access_token", accessToken);
+
+        return response
+          .status(200)
+          .json({ message: "Login Successful", refreshToken });
       }
       return response.status(401).json({ message: "Invalid Password" });
     }
@@ -60,6 +62,47 @@ export async function initAuthentication(requestuest, response) {
     return response
       .status(500)
       .json({ message: "Internal Server Error. Check console for details" });
+  }
+}
+
+export async function initTokenRefresh(request, response) {
+  const { refreshToken } = request.body;
+
+  if (!refreshToken) {
+    return response.status(400).json({ message: "Refresh token is required" });
+  }
+
+  try {
+    const refreshTokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const user = await User.findOne({ refresh_token: refreshTokenHash });
+
+    if (!user) {
+      return response.status(404).json({ message: "Invalid refresh token" });
+    }
+
+    // Check if the refresh token is expired
+    if (Date.now() > user.refresh_token_expiry) {
+      return response
+        .status(400)
+        .json({ message: "Refresh token has expired" });
+    }
+
+    const newAccessToken = await user.generateJWTToken();
+    const newRefreshToken = await user.generateRefreshToken();
+    setTokenCookie(response, "access_token", newAccessToken);
+    setTokenCookie(response, "refresh_token", newRefreshToken);
+
+    
+    return response.status(200).json({
+      message: "Access and Refresh tokens refreshed.",
+    });
+  } catch (error) {
+    console.error(`Refresh Token Error: ${error.message}`);
+    return response.status(500).json({ message: "Internal Server Error" });
   }
 }
 

@@ -8,6 +8,7 @@ import {
   checkExistingAuthCredentials,
   initAuthentication,
   initRegistration,
+  initTokenRefresh
 } from "../controller/authController.js";
 const router = express.Router();
 
@@ -24,6 +25,8 @@ router.post(
   commonlyUsedValidationResult,
   initAuthentication
 );
+router.post("/refresh", initTokenRefresh);
+
 
 router.post("/checkUnique", checkExistingAuthCredentials);
 export default router;
