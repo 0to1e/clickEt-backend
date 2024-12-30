@@ -1,3 +1,4 @@
+// src/routes/theatreRoute.js
 import express from "express";
 import { validateTheatre } from "../middleware/validation/theatreValidation.js";
 import { commonlyUsedValidationResult } from "../utils/prettyValidationResult.js";

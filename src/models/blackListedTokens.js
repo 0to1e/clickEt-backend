@@ -1,3 +1,4 @@
+// src/models/blackListedTokens.js
 import mongoose from "mongoose";
 
 const blacklistSchema = new mongoose.Schema(

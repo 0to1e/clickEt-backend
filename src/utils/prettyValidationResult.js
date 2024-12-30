@@ -1,3 +1,4 @@
+// src/utils/prettyValidationResult.js
 import { validationResult } from "express-validator";
 
 export async function commonlyUsedValidationResult(request, response, next) {

@@ -1,3 +1,4 @@
+// src/middleware/validation/authValidation.js
 import { body } from "express-validator";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
@@ -44,7 +45,7 @@ export const registrationValidationRules = [
     .notEmpty()
     .withMessage("Password is required")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{10,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
       "i"
     )
     .withMessage(

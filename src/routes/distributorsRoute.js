@@ -1,3 +1,4 @@
+// src/routes/distributorsRoute.js
 import express from "express";
 import { validationRules } from "../middleware/validation/distributorsValidation.js";
 import { commonlyUsedValidationResult } from "../utils/prettyValidationResult.js";

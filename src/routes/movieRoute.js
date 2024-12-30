@@ -1,3 +1,4 @@
+// src/routes/movieRoute.js
 import express from "express";
 import { validationRules } from "../middleware/validation/movieValidation.js";
 import { checkAndFormatDate } from "../middleware/utils/dateFormatter.js";

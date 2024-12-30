@@ -1,3 +1,4 @@
+// src/controller/moviesController.js
 import { Movie } from "../models/movieModel.js";
 
 export async function addMovie(request, response) {

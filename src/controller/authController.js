@@ -1,3 +1,4 @@
+// src/controller/authController.js
 import User from "../models/userModel.js";
 import crypto from "crypto";
 import { setTokenCookie } from "../utils/cookieUtil.js";
@@ -16,7 +17,8 @@ export async function initRegistration(request, response) {
     user.password = undefined;
     const accessToken = await user.generateJWTToken();
     const refreshToken = await user.generateRefreshToken();
-    setRefreshTokenCookie(response, refreshToken);
+    setTokenCookie(response,"access_token", accessToken);
+    setTokenCookie(response,"refresh_token", refreshToken);
 
     return response.status(201).json({
       message: "User created successfully",
@@ -45,12 +47,13 @@ export async function initAuthentication(request, response) {
       if (authResult) {
         const accessToken = await user.generateJWTToken();
         const refreshToken = await user.generateRefreshToken();
+
         setTokenCookie(response, "refresh_token", refreshToken);
         setTokenCookie(response, "access_token", accessToken);
 
         return response
           .status(200)
-          .json({ message: "Login Successful", refreshToken });
+          .json({ message: "Login Successful" });
       }
       return response.status(401).json({ message: "Invalid Password" });
     }
@@ -96,7 +99,6 @@ export async function initTokenRefresh(request, response) {
     setTokenCookie(response, "access_token", newAccessToken);
     setTokenCookie(response, "refresh_token", newRefreshToken);
 
-    
     return response.status(200).json({
       message: "Access and Refresh tokens refreshed.",
     });

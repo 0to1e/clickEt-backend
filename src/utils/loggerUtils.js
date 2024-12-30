@@ -1,74 +1,60 @@
-import morgan from 'morgan';
-import winston from 'winston';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import path from 'path';
+// src/utils/loggerUtils.js
+import winston from "winston";
 
-// Create a write stream for logging HTTP requests to a file
-const accessLogStream = fs.createWriteStream(path.join(path.resolve(), 'access.log'), { flags: 'a' });
+// Determine the log level based on the environment
+const logLevel = process.env.NODE_ENV === "production" ? "info" : "debug"; // `info` for production, `debug` for development
 
-// Create a Winston logger
+// Create the log format for the logger (structured JSON)
+const logFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf(
+    ({
+      level,
+      message,
+      timestamp,
+      requestType,
+      endpoint,
+      payload,
+      responseTime,
+      statusCode,
+      error,
+    }) => {
+      return JSON.stringify(
+        {
+          timestamp,
+          level,
+          requestType,
+          endpoint,
+          payload,
+          responseTime,
+          statusCode,
+          message,
+          error: error || null,
+        },
+        null,
+        2
+      );
+    }
+  )
+);
+
+// Create the winston logger
 const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.printf(({ timestamp, level, message }) => {
-      return `${timestamp} ${level}: ${message}`;
-    })
-  ),
+  level: logLevel, // Set the log level based on the environment
+  format: winston.format.combine(winston.format.timestamp(), logFormat),
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
+    // Console transport for development or when in debugging mode
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }),
+
+    ...(process.env.NODE_ENV === "production"
+      ? [new winston.transports.File({ filename: "logs/combined.log" })]
+      : []), // No file logging in development (unless you specifically want it)
   ],
 });
 
-// Middleware to log HTTP requests with payload, status, and response time
-app.use(bodyParser.json()); // to parse JSON bodies
-app.use(bodyParser.urlencoded({ extended: true })); // to parse URL-encoded bodies
-
-// Morgan Middleware to log HTTP requests
-app.use(morgan('tiny', { stream: accessLogStream }));
-
-// Custom logging middleware
-app.use((req, res, next) => {
-  const start = Date.now(); // Capture the start time
-
-  // Store original res.send function
-  const originalSend = res.send;
-
-  res.send = function (body) {
-    const responseTime = Date.now() - start; // Calculate response time
-    const logMessage = {
-      request: `${req.method} ${req.originalUrl}`,
-      payload: req.method === 'POST' || req.method === 'PUT' ? req.body : null, // Log payload for POST/PUT
-      code: res.statusCode,
-      message: res.statusCode >= 200 && res.statusCode < 300 ? 'Success' : 'Error',
-      responseTime: `${responseTime}ms`
-    };
-
-    // Log the structured message using Winston
-    logger.info(JSON.stringify(logMessage));
-
-    // Call the original send function
-    originalSend.call(res, body);
-  };
-
-  next(); // Continue to the next middleware or route
-});
-
-// Example route
-app.post('/auth/login', (req, res) => {
-  const { username, password } = req.body;
-  
-  // Simulating login logic
-  if (username === 'admin' && password === 'password123') {
-    res.status(200).send({ message: 'Login successful' });
-  } else {
-    res.status(401).send({ message: 'Invalid credentials' });
-  }
-});
-
-// Start the server
-app.listen(3000, () => {
-  logger.info('Server is running on port 3000');
-});
+export { logger };
