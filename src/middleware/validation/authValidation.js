@@ -8,14 +8,14 @@ export const registrationValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Full name is required"),
+    .withMessage("Full name is required."),
 
   body("user_name")
     .isString()
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Username is required")
+    .withMessage("Username is required.")
     .matches(/^[^@]+$/, "i")
     .withMessage("Username cannot contain the '@' character"),
 
@@ -23,7 +23,7 @@ export const registrationValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Email is required")
+    .withMessage("Email is required.")
     .isEmail()
     .withMessage("Invalid email format"),
 
@@ -31,7 +31,7 @@ export const registrationValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Phone number is required")
+    .withMessage("Phone number is required.")
     .custom((value) => {
       if (!isValidPhoneNumber(value, "NP")) {
         throw new Error("Invalid Nepal phone number.");
@@ -43,7 +43,7 @@ export const registrationValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Password is required")
+    .withMessage("Password is required.")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
       "i"
@@ -58,7 +58,7 @@ export const authValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Username/Email is required")
+    .withMessage("Username/Email is required.")
     .custom((value) => {
       if (!value.includes("@")) {
         return true;
@@ -74,6 +74,28 @@ export const authValidationRules = [
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Password is required"),
+    .withMessage("Password is required."),
 ];
-
+export const forgetValidationRules = [
+  body("email")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Invalid email format."),
+];
+export const resetValidationRules = [
+  body("password")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Password is required.")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+      "i"
+    )
+    .withMessage(
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+    ),
+];
