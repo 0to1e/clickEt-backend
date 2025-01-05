@@ -4,19 +4,22 @@ import {
   authValidationRules,
   registrationValidationRules,
   forgetValidationRules,
-  resetValidationRules
+  resetValidationRules,
 } from "../middleware/validation/authValidation.js";
 import { commonlyUsedValidationResult } from "../utils/prettyValidationResult.js";
 import {
   checkExistingAuthCredentials,
+  getUserDetails,
   initAuthentication,
+  initLogOut,
   initRegistration,
   initTokenRefresh,
   resetPassword,
   sendResetEmail,
 } from "../controller/authController.js";
-const router = express.Router();
+import { protectRoute } from "../middleware/auth/routeProtection.js";
 import { resetLimiter } from "../utils/emailUtils.js";
+const router = express.Router();
 
 router.post(
   "/register",
@@ -45,7 +48,10 @@ router.post(
   resetPassword
 );
 
-router.post("/refresh", initTokenRefresh);
-
 router.post("/checkUnique", checkExistingAuthCredentials);
+
+router.post("/refresh", protectRoute(), initTokenRefresh);
+router.get("/users/me", protectRoute(), getUserDetails);
+router.post("/logout", protectRoute(), initLogOut);
+
 export default router;

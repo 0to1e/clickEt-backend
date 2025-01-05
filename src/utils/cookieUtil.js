@@ -1,4 +1,5 @@
 // src/utils/cookieUtil.js
+import crypto from "crypto";
 export const setTokenCookie = (response, cookie_name, tokenValue) => {
   const cookieOptions = {
     httpOnly: true,
@@ -11,15 +12,20 @@ export const setTokenCookie = (response, cookie_name, tokenValue) => {
   response.cookie(cookie_name, tokenValue, cookieOptions);
 };
 
-import { BlacklistedToken } from "../models/blackListedTokens.js";
+export const hashCrypto = (refreshToken) =>
+  crypto.createHash("sha256").update(refreshToken).digest("hex");
 
-// export const isTokenRevoked = async (token) => {
-//   const blacklistedToken = await BlacklistedToken.findOne({ token });
-//   return blacklistedToken !== null;
-// };
 
-// // Middleware to add token to blacklist
-// export const blacklistToken = async (token) => {
-//   const blacklistedToken = new BlacklistedToken({ token });
-//   await blacklistedToken.save();
-// };
+export const verifyAccessToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    return decoded;
+  } catch (error) {
+    throw new Error(`Invalid or expired token: ${error.message}`);
+  }
+};
+
+export const getUserIdFromToken = (token) => {
+  const decoded = verifyAccessToken(token);
+  return decoded.id;
+};

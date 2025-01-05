@@ -49,7 +49,7 @@ export const registrationValidationRules = [
       "i"
     )
     .withMessage(
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      "Password must 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
     ),
 ];
 
@@ -96,6 +96,6 @@ export const resetValidationRules = [
       "i"
     )
     .withMessage(
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      "Password must 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
     ),
 ];

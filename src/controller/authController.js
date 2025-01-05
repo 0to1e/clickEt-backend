@@ -1,7 +1,6 @@
 // src/controller/authController.js
 import User from "../models/userModel.js";
-import crypto from "crypto";
-import { setTokenCookie } from "../utils/cookieUtil.js";
+import { setTokenCookie, hashCrypto } from "../utils/cookieUtil.js";
 import {
   createResetUrl,
   getPasswordResetTemplate,
@@ -65,18 +64,14 @@ export async function initAuthentication(request, response) {
 }
 
 export async function initTokenRefresh(request, response) {
-  const { refreshToken } = request.body;
+  const refreshToken = request.headers["refresh-token"];
 
   if (!refreshToken) {
     return response.status(400).json({ message: "Refresh token is required" });
   }
 
   try {
-    const refreshTokenHash = crypto
-      .createHash("sha256")
-      .update(refreshToken)
-      .digest("hex");
-
+    const refreshTokenHash = hashCrypto(refreshToken);
     const user = await User.findOne({ refresh_token: refreshTokenHash });
 
     if (!user) {
@@ -155,7 +150,7 @@ export async function sendResetEmail(request, response) {
 export async function resetPassword(request, response) {
   const { token, password } = request.body;
 
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const hashedToken = hashCrypto(token);
 
   const user = await User.findOne({
     password_reset_Token: hashedToken,
@@ -179,6 +174,38 @@ export async function resetPassword(request, response) {
   });
 }
 
+export async function getUserDetails(request, response) {
+  try {
+    // The user ID is already attached to the request object by the protectRoute middleware
+    const userId = request.user.id;
+
+    // Fetch the user details from the database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return response.status(404).json({ message: "User not found" });
+    }
+
+    // Return the user details
+    return response.status(200).json({ user });
+  } catch (error) {
+    console.error(`Error fetching user details: ${error.message}`);
+    return response.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export function initLogOut(request, response) {
+  try {
+    // Clear the access and refresh tokens from cookies
+    response.clearCookie("access_token");
+    response.clearCookie("refresh_token");
+
+    return response.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error(`Logout Error: ${error.message}`);
+    return response.status(500).json({ message: "Internal Server Error" });
+  }
+}
 export async function checkExistingAuthCredentials(request, response) {
   const { user_name, email } = request.body;
 
