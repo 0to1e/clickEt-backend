@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
       enum: ["ADMIN", "MODERATOR", "EDITOR", "USER"],
       default: "USER",
     },
+    profile_URL: {
+      type: String,
+      unique: true,
+      default: null,
+    },
     password_reset_Token: { type: String, default: null },
     password_reset_expiry: { type: Date, default: null },
     refresh_token: { type: String, default: null },
@@ -55,14 +60,19 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 userSchema.methods.generateJWTToken = async function () {
-  return jwt.sign({ id: this._id, role:this.role }, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRY,
-  });
+  return jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.JWT_ACCESS_SECRET,
+    {
+      expiresIn: process.env.JWT_ACCESS_EXPIRY,
+    }
+  );
 };
 
 userSchema.methods.generateRefreshToken = async function () {
   const refreshToken = crypto.randomBytes(40).toString("hex");
-  const refreshTokenHash = crypto.createHash("sha256")
+  const refreshTokenHash = crypto
+    .createHash("sha256")
     .update(refreshToken)
     .digest("hex");
   const refreshTokenExpiry =
@@ -75,7 +85,6 @@ userSchema.methods.generateRefreshToken = async function () {
 
   return refreshToken;
 };
-
 
 userSchema.methods.generateRecoveryToken = async function () {
   const resetToken = crypto.randomBytes(20).toString("hex");

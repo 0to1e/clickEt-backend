@@ -14,18 +14,3 @@ export const setTokenCookie = (response, cookie_name, tokenValue) => {
 
 export const hashCrypto = (refreshToken) =>
   crypto.createHash("sha256").update(refreshToken).digest("hex");
-
-
-export const verifyAccessToken = (token) => {
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    return decoded;
-  } catch (error) {
-    throw new Error(`Invalid or expired token: ${error.message}`);
-  }
-};
-
-export const getUserIdFromToken = (token) => {
-  const decoded = verifyAccessToken(token);
-  return decoded.id;
-};

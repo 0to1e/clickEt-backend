@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export const protectRoute = (allowedRoles = []) => {
   return (request, response, next) => {
-    const token = request.headers.authorization && request.headers.authorization.split(" ")[1];
+    const token = request.cookies.access_token;
     if (!token) {
       return response.status(401).json({ message: "Authorization token is missing" });
     }

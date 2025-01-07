@@ -1,4 +1,5 @@
 // src/controller/authController.js
+
 import User from "../models/userModel.js";
 import { setTokenCookie, hashCrypto } from "../utils/cookieUtil.js";
 import {
@@ -6,6 +7,8 @@ import {
   getPasswordResetTemplate,
   sendEmail,
 } from "../utils/emailUtils.js";
+import { getUserIdFromToken, isValidObjectId } from "../utils/tokenUtils.js";
+import {convertToWebP, uploadToCloudinary} from '../utils/imageUtils.js'
 export async function initRegistration(request, response) {
   const registrationCredentials = request.body;
 
@@ -64,7 +67,7 @@ export async function initAuthentication(request, response) {
 }
 
 export async function initTokenRefresh(request, response) {
-  const refreshToken = request.headers["refresh-token"];
+  const refreshToken = request.cookies.refresh_token;
 
   if (!refreshToken) {
     return response.status(400).json({ message: "Refresh token is required" });
@@ -174,23 +177,34 @@ export async function resetPassword(request, response) {
   });
 }
 
-export async function getUserDetails(request, response) {
+export async function initAuthStatus(request, response) {
   try {
-    // The user ID is already attached to the request object by the protectRoute middleware
-    const userId = request.user.id;
-
-    // Fetch the user details from the database
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return response.status(404).json({ message: "User not found" });
+    const token = request.cookies.access_token;
+    if (!token) {
+      return response.status(401).json({ message: "Token not available" });
     }
 
-    // Return the user details
-    return response.status(200).json({ user });
+    const userId = getUserIdFromToken(token);
+
+    // Validate the decoded ID
+    if (!isValidObjectId(userId)) {
+      return response.status(401).json({ message: "Invalid user ID" });
+    }
+
+    const user = await User.findById(userId).select(
+      "-_id -phone_number -password -refresh_token -refresh_token_expiry -password_reset_Token -password_reset_expiry"
+    );
+    if (!user) {
+      return response.status(401).json({ message: "User doesn't exist" });
+    }
+
+    response
+      .status(200)
+      .json({ message: "User successfully fetched", user: user });
   } catch (error) {
-    console.error(`Error fetching user details: ${error.message}`);
-    return response.status(500).json({ message: "Internal Server Error" });
+    response
+      .status(401)
+      .json({ message: "Internal Server Error", error: error });
   }
 }
 
@@ -249,5 +263,44 @@ export async function listAllUsers(request, response) {
   } catch (error) {
     console.error("Error retrieving users:", error.message);
     return response.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+
+export async function uploadProfileImage(request, response) {
+  const token = request.cookies.access_token;
+  if (!token) {
+    return response.status(401).json({ message: 'Token not available' });
+  }
+
+  const userId = getUserIdFromToken(token);
+
+  // Validate the decoded ID
+  if (!isValidObjectId(userId)) {
+    return response.status(401).json({ message: 'Invalid user ID' });
+  }
+
+  try {
+    // Check if a file was uploaded
+    if (!request.file) {
+      return response.status(400).json({ message: 'No image provided' });
+    }
+
+    // Step 1: Convert the image to WebP
+    const webpBuffer = await convertToWebP(request.file.buffer);
+
+    // Step 2: Upload the WebP image to Cloudinary
+    const result = await uploadToCloudinary(webpBuffer, 'profileImages');
+
+    // Step 3: Update user profile URL in the database
+    await User.findByIdAndUpdate(userId, { profile_URL: result.secure_url });
+
+    // Step 4: Return success response
+    return response.status(200).json({
+      message: 'Profile image uploaded successfully',
+    });
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    return response.status(500).json({ message: 'Internal Server Error' });
   }
 }

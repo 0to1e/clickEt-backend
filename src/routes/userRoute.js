@@ -9,17 +9,21 @@ import {
 import { commonlyUsedValidationResult } from "../utils/prettyValidationResult.js";
 import {
   checkExistingAuthCredentials,
-  getUserDetails,
+  initAuthStatus,
   initAuthentication,
   initLogOut,
   initRegistration,
   initTokenRefresh,
   resetPassword,
   sendResetEmail,
+  uploadProfileImage
 } from "../controller/authController.js";
 import { protectRoute } from "../middleware/auth/routeProtection.js";
 import { resetLimiter } from "../utils/emailUtils.js";
+import multer from 'multer'
+
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() }); // Store file in memory
 
 router.post(
   "/register",
@@ -51,7 +55,8 @@ router.post(
 router.post("/checkUnique", checkExistingAuthCredentials);
 
 router.post("/refresh", protectRoute(), initTokenRefresh);
-router.get("/users/me", protectRoute(), getUserDetails);
+router.get("/user/status", initAuthStatus);
+router.post('/user/updateimage', protectRoute(), upload.single('image'), uploadProfileImage);
 router.post("/logout", protectRoute(), initLogOut);
 
 export default router;
