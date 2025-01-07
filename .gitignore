@@ -49,3 +49,5 @@ Thumbs.db
 
 # JetBrains project files (optional but useful)
 .idea/
+
+.env
