@@ -8,7 +8,7 @@ import {
   sendEmail,
 } from "../utils/emailUtils.js";
 import { getUserIdFromToken, isValidObjectId } from "../utils/tokenUtils.js";
-import {convertToWebP, uploadToCloudinary} from '../utils/imageUtils.js'
+import { deleteImageFromCloudinary, processAndUploadImages } from "../utils/imageUtils.js";
 export async function initRegistration(request, response) {
   const registrationCredentials = request.body;
 
@@ -266,41 +266,39 @@ export async function listAllUsers(request, response) {
   }
 }
 
-
 export async function uploadProfileImage(request, response) {
   const token = request.cookies.access_token;
   if (!token) {
-    return response.status(401).json({ message: 'Token not available' });
+    return response.status(401).json({ message: "Token not available" });
   }
 
   const userId = getUserIdFromToken(token);
 
   // Validate the decoded ID
   if (!isValidObjectId(userId)) {
-    return response.status(401).json({ message: 'Invalid user ID' });
+    return response.status(401).json({ message: "Invalid user ID" });
   }
 
   try {
     // Check if a file was uploaded
     if (!request.file) {
-      return response.status(400).json({ message: 'No image provided' });
+      return response.status(400).json({ message: "No image provided" });
     }
 
-    // Step 1: Convert the image to WebP
-    const webpBuffer = await convertToWebP(request.file.buffer);
+    const imageUrls = await processAndUploadImages(
+      [request.file.buffer],
+      "profileImages"
+    );
 
-    // Step 2: Upload the WebP image to Cloudinary
-    const result = await uploadToCloudinary(webpBuffer, 'profileImages');
-
-    // Step 3: Update user profile URL in the database
-    await User.findByIdAndUpdate(userId, { profile_URL: result.secure_url });
-
+    // Update user profile URL in the database
+    await User.findByIdAndUpdate(userId, { profile_URL: imageUrls[0] });
+    await deleteImageFromCloudinary(request.body.currentImageUrl);
     // Step 4: Return success response
     return response.status(200).json({
-      message: 'Profile image uploaded successfully',
+      message: "Profile image uploaded successfully",
     });
   } catch (error) {
-    console.error('Error uploading profile image:', error);
-    return response.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error uploading profile image:", error);
+    return response.status(500).json({ message: "Internal Server Error" });
   }
 }

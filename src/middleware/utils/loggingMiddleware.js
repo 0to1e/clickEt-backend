@@ -1,28 +1,28 @@
 import { logger } from "../../utils/loggerUtils.js"; // Import the logger utility
 
-const loggingMiddleware = (req, res, next) => {
+const loggingMiddleware = (request, response, next) => {
   const startTime = Date.now();
 
-  const originalSend = res.send;
+  const originalSend = response.send;
 
-  res.send = (body) => {
+  response.send = (body) => {
     const responseTime = Date.now() - startTime;
 
     const logData = {
-      requestType: req.method,
-      endpoint: req.originalUrl,
-      payload: req.body,
+      requestuestType: request.method,
+      endpoint: request.originalUrl,
+      payload: request.body,
       responseTime,
-      statusCode: res.statusCode,
+      statusCode: response.statusCode,
       message: body,
     };
 
-    if (res.statusCode >= 400) {
+    if (response.statusCode >= 400) {
       logger.error('Error response', logData);
     } else {
       logger.info('Successful response', logData);
     }
-    originalSend.call(res, body);
+    originalSend.call(response, body);
   };
   next();
 };
