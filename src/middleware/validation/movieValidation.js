@@ -39,13 +39,20 @@ export const validationRules = [
     .escape()
     .notEmpty()
     .withMessage("Movie's language is required."),
-  body("posterURL")
+  body("posterURL.sm")
     .isURL()
-    .withMessage("Invalid URL format")
+    .withMessage("Invalid URL format for small poster.")
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("Movie's poster URL is required."),
+    .withMessage("Small poster URL is required."),
+  body("posterURL.lg")
+    .isURL()
+    .withMessage("Invalid URL format for large poster.")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Large poster URL is required."),
   body("trailerURL")
     .isURL()
     .withMessage("Invalid URL format")
@@ -53,4 +60,11 @@ export const validationRules = [
     .escape()
     .notEmpty()
     .withMessage("Movie's trailer URL is required."),
+  body("status")
+    .isIn(["showing", "upcoming"])
+    .withMessage("Movie's status must be either 'showing' or 'coming'.")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Movie's status is required."),
 ];

@@ -12,6 +12,7 @@ import {
   getMovieByName,
   getMoviesByCategory,
   getMovieById,
+  getMoviesByStatus,
 } from "../controller/moviesController.js";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get("/getAll", getAllMovies);
 router.post("/getByName", getMovieByName);
 router.post("/getByCategory", getMoviesByCategory);
 router.post("/getById/:movieId",getMovieById); 
+router.get("/:status", getMoviesByStatus);
 
 router.put(
   "/update/:id",

@@ -21,7 +21,6 @@ import {
 import { protectRoute } from "../middleware/auth/routeProtection.js";
 import { resetLimiter } from "../utils/emailUtils.js";
 import multer from 'multer'
-
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() }); // Store file in memory
 

@@ -1,4 +1,15 @@
 import mongoose from "mongoose";
+
+const posterSchema = new mongoose.Schema(
+  {
+    sm: { type: String, required: true },
+    lg: { type: String, required: true },
+  },
+  {
+    _id: false,
+  }
+);
+
 const movieSchema = new mongoose.Schema(
   {
     name: {
@@ -30,12 +41,17 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     posterURL: {
-      type: String,
+      type: posterSchema,
       required: true,
     },
     trailerURL: {
       type: String,
       required: true,
+    },
+    status: {
+      type: String,
+      enum: ["upcoming", "showing"],
+      default: "showing",
     },
   },
   { timestamps: true }
