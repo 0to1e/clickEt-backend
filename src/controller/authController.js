@@ -8,7 +8,11 @@ import {
   sendEmail,
 } from "../utils/emailUtils.js";
 import { getUserIdFromToken, isValidObjectId } from "../utils/tokenUtils.js";
-import { deleteImageFromCloudinary, processAndUploadImages } from "../utils/imageUtils.js";
+import {
+  deleteImageFromCloudinary,
+  processAndUploadImages,
+} from "../utils/imageUtils/cloudinaryUtils.js";
+
 export async function initRegistration(request, response) {
   const registrationCredentials = request.body;
 
@@ -51,7 +55,13 @@ export async function initAuthentication(request, response) {
         setTokenCookie(response, "refresh_token", refreshToken);
         setTokenCookie(response, "access_token", accessToken);
 
-        return response.status(200).json({ message: "Login Successful" });
+        return response
+          .status(200)
+          .json({
+            message: "Login Successful",
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          });
       }
       return response.status(401).json({ message: "Invalid Password" });
     }

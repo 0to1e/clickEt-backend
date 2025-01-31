@@ -40,23 +40,23 @@ export const validationRules = [
     .notEmpty()
     .withMessage("Movie's language is required."),
   body("posterURL.sm")
+    .trim()
     .isURL()
     .withMessage("Invalid URL format for small poster.")
-    .trim()
     .escape()
     .notEmpty()
     .withMessage("Small poster URL is required."),
   body("posterURL.lg")
+    .trim()
     .isURL()
     .withMessage("Invalid URL format for large poster.")
-    .trim()
     .escape()
     .notEmpty()
     .withMessage("Large poster URL is required."),
   body("trailerURL")
+    .trim()
     .isURL()
     .withMessage("Invalid URL format")
-    .trim()
     .escape()
     .notEmpty()
     .withMessage("Movie's trailer URL is required."),

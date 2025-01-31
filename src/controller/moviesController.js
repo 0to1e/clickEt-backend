@@ -1,44 +1,99 @@
 // src/controller/moviesController.js
 import { Movie } from "../models/movieModel.js";
-import { deleteImageFromCloudinary, processAndUploadImages } from "../utils/imageUtils.js";
+import {
+  deleteImageFromCloudinary,
+  processAndUploadImages,
+} from "../utils/imageUtils/cloudinaryUtils.js";
+import { downloadImage } from "../utils/imageUtils/imgDownloadUtils.js";
 import { decodeHtmlEntities } from "../utils/urlUtils.js";
+import { downloadAndProcessVideo } from "../utils/videoUtils.js";
 
 // export async function addMovie(request, response) {
 //   const movie_details = request.body;
 
 //   try {
-//     const movie = Movie.create(movie_details);
+//     const imageUrls = [
+//       decodeHtmlEntities(movie_details.posterURL.sm),
+//       decodeHtmlEntities(movie_details.posterURL.lg),
+//     ];
+
+//     const imageBuffers = await Promise.all(
+//       imageUrls.map(async (url) => {
+//         return await downloadImage(url);
+//       })
+//     );
+
+//     // Process and upload images to Cloudinary
+//     const uploadedImageUrls = await processAndUploadImages(
+//       imageBuffers,
+//       "movies"
+//     );
+
+//     // Update the posterURL with the Cloudinary URLs
+//     movie_details.posterURL = {
+//       sm: uploadedImageUrls[0], // First URL is for `sm`
+//       lg: uploadedImageUrls[1], // Second URL is for `lg`
+//     };
+
+//     // Create the movie in the database
+//     const movie = await Movie.create(movie_details);
+
 //     return response
 //       .status(201)
-//       .json({ message: "Movie added successfully.", movie: movie });
+//       .json({ message: "Movie added successfully.", movie });
 //   } catch (error) {
-//     console.error(`Error Adding movie:${error.message}`);
+//     console.error(`Error adding movie: ${error.message}`);
 //     return response
 //       .status(500)
 //       .json({ message: "Internal Server Error. Check console for details" });
 //   }
 // }
+
 export async function addMovie(request, response) {
   const movie_details = request.body;
-
+  
   try {
-    const imageUrls = [movie_details.posterURL.sm, movie_details.posterURL.lg];
-
-    // Process and upload images to Cloudinary
-    const uploadedImageUrls = await processAndUploadImages(imageUrls, "movies");
-
+    // Process images (your existing code)
+    const imageUrls = [
+      decodeHtmlEntities(movie_details.posterURL.sm),
+      decodeHtmlEntities(movie_details.posterURL.lg),
+    ];
+    const imageBuffers = await Promise.all(
+      imageUrls.map(async (url) => {
+        return await downloadImage(url);
+      })
+    );
+    const uploadedImageUrls = await processAndUploadImages(imageBuffers, "movies/posters");
+    
+    // Process video
+    if (movie_details.trailerURL) {
+      const videoResult = await downloadAndProcessVideo(
+        movie_details.trailerURL,
+        "movies/trailers"
+      );
+      
+      // Update movie details with processed video information
+      movie_details.trailer = {
+        url: videoResult.url,
+        publicId: videoResult.publicId,
+        duration: videoResult.duration,
+        format: videoResult.format
+      };
+    }
+    
     // Update the posterURL with the Cloudinary URLs
     movie_details.posterURL = {
-      sm: uploadedImageUrls[0], // First URL is for `sm`
-      lg: uploadedImageUrls[1], // Second URL is for `lg`
+      sm: uploadedImageUrls[0],
+      lg: uploadedImageUrls[1],
     };
 
     // Create the movie in the database
     const movie = await Movie.create(movie_details);
-
+    
     return response
       .status(201)
       .json({ message: "Movie added successfully.", movie });
+      
   } catch (error) {
     console.error(`Error adding movie: ${error.message}`);
     return response

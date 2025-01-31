@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import rateLimit from "express-rate-limit";
 export const createResetUrl = (token) => {
-  return `${process.env.FRONT_PORT}/reset-password/${token}`;
+  return `${process.env.FRONT_PORT}/auth/reset-password/${token}`;
 };
 
 export const getPasswordResetTemplate = (resetUrl, appName, appLogo) => `
