@@ -17,6 +17,11 @@ const movieSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     category: {
       type: String,
       enum: ["Nepali", "Bollywood", "Hollywood"],

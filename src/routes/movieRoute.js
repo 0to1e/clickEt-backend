@@ -9,10 +9,10 @@ import {
   updateMovie,
   checkUniqueMovies,
   getAllMovies,
-  getMovieByName,
-  getMoviesByCategory,
   getMovieById,
   getMoviesByStatus,
+  updateMoviesWithSlugs,
+  getMovieBySlug,
 } from "../controller/moviesController.js";
 
 const router = express.Router();
@@ -20,10 +20,9 @@ const router = express.Router();
 router.post("/add", validationRules, commonlyUsedValidationResult , addMovie);
 
 router.get("/getAll", getAllMovies);
-router.post("/getByName", getMovieByName);
-router.post("/getByCategory", getMoviesByCategory);
+router.get("/:slug", getMovieBySlug);
 router.post("/getById/:movieId",getMovieById); 
-router.get("/:status", getMoviesByStatus);
+router.get("/status/:status", getMoviesByStatus);
 
 router.put(
   "/update/:id",
@@ -32,6 +31,10 @@ router.put(
   commonlyUsedValidationResult,
   updateMovie
 );
+
+router.post("/updateAll", updateMoviesWithSlugs);
+
+router.delete("/delete/:id", deleteMovie);
 
 router.delete("/delete/:id", deleteMovie);
 

@@ -22,8 +22,7 @@ import { protectRoute } from "../middleware/auth/routeProtection.js";
 import { resetLimiter } from "../utils/emailUtils.js";
 import multer from 'multer'
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() }); // Store file in memory
-
+const upload = multer({ storage: multer.memoryStorage() });
 router.post(
   "/register",
   registrationValidationRules,
@@ -55,7 +54,8 @@ router.post("/checkUnique", checkExistingAuthCredentials);
 
 router.post("/refresh", protectRoute(), initTokenRefresh);
 router.get("/user/status", initAuthStatus);
-router.post('/user/updateimage', protectRoute(), upload.single('image'), uploadProfileImage);
+router.post('/user/upload', protectRoute(), upload.single('image'), uploadProfileImage);
 router.post("/logout", protectRoute(), initLogOut);
 
 export default router;
+

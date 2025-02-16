@@ -1,88 +1,80 @@
 {
-    "name": "Big Movies NP",
+    "name": "QFX NP",
     "locations": [
-        {
-            "type": "HQ",
-            "location": "Kathnamdu",
-            "coordinates": {
-                "latitude": 384,
-                "longitude": 384
-            }
-        },
-        {
-            "type": "Branch",
-            "location": "Pokhara",
-            "coordinates": {
-                "latitude": 385,
-                "longitude": 386
-            }
+      {
+        "type": "HQ",
+        "location": "Kathmandu",
+        "coordinates": {
+          "latitude": 27.7172,
+          "longitude": 85.3240
         }
+      },
+      {
+        "type": "Branch",
+        "location": "Pokhara",
+        "coordinates": {
+          "latitude": 28.2096,
+          "longitude": 83.9856
+        }
+      }
     ],
     "contacts": [
-        {
-            "type": "Branch",
-            "location": "Pokhara",
-            "phoneNumbers": [
-                {
-                    "type": "Personal",
-                    "number": 9860452132
-                },
-                {
-                    "type": "Support",
-                    "number": 98604624785
-                }
-            ],
-            "emails": [
-                {
-                    "type": "Support",
-                    "email": "support.pokhara@bigmovies.com.np"
-                },
-                {
-                    "type": "Inquiry",
-                    "email": "inquiry.pokhara@bigmovies.com.np"
-                }
-            ]
-        },
-        {
-            "type": "HQ",
-            "phoneNumbers": [
-                {
-                    "type": "Personal",
-                    "number": 9860452132
-                },
-                {
-                    "type": "Support",
-                    "number": 98604624785
-                }
-            ],
-            "emails": [
-                {
-                    "type": "Support",
-                    "email": "support.ktm@bigmovies.com.np"
-                },
-                {
-                    "type": "Inquiry",
-                    "email": "inquiry.ktm@bigmovies.com.np"
-                }
-            ]
-        }
+      {
+        "location": "Pokhara",
+        "phoneNumbers": [
+          {
+            "type": "Inquiry",
+            "number": "+977-9863484276"
+          },
+          {
+            "type": "Support",
+            "number": "+977-9860462378"
+          }
+        ],
+        "emails": [
+          {
+            "type": "Support",
+            "email": "support.pokhara@qfxmovies.com.np"
+          },
+          {
+            "type": "Inquiry",
+            "email": "inquiry.pokhara@qfxmovies.com.np"
+          }
+        ]
+      },
+      {
+        "location": "Kathmandu",
+        "phoneNumbers": [
+          {
+            "type": "Inquiry",
+            "number": "+977-9860452143"
+          },
+          {
+            "type": "Support",
+            "number": "+977-9860462449"
+          }
+        ],
+        "emails": [
+          {
+            "type": "Inquiry",
+            "email": "support.ktm@qfxmovies.com.np"
+          },
+          {
+            "type": "Support",
+            "email": "support.ktm@qfxmovies.com.np"
+          }
+        ]
+      }
     ],
-    "commissionRate":10,
+    "commissionRate": 10,
     "distributionRights": [
-        {
-            "movieId": 1001,
-            "commissionRate":"10",
-            "locations":["Kathmandu, Pokhara"],
-            "validFrom": "date",
-            "validUntil": "date"
-        },
-        {
-            "movieId": 1002,
-            "locations":["Kathmandu, Pokhara", "Chitwan"],
-            "commissionRate":15,
-            "validFrom": "date",
-            "validUntil": "date"
-        }
+      {
+        "movieId": "67939270f2e9d7aab69ddc65",
+        "commissionRate": 15,
+        "territories": ["Kathmandu", "Pokhara"],
+        "validFrom": "2024-01-01",
+        "validUntil": "2024-12-31"
+      }
     ],
-    "isActive":true
-}
+    "isActive": true
+  }

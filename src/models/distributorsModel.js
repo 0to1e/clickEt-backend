@@ -10,6 +10,11 @@ const distributorSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    logo_URL: {
+      type: String,
+      required: false,
+      unique: true,
+    },
     locations: [locationSchema],
     contacts: [contactSchema],
     commissionRate: {
@@ -18,7 +23,7 @@ const distributorSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
-    distributionRights: [distributionRightSchema],
+    distributionRights: { type: [distributionRightSchema], required: false },
     isActive: {
       type: Boolean,
       default: true,
