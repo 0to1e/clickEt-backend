@@ -36,7 +36,7 @@ router.put(
   commonlyUsedValidationResult,
   updateDistributor
 );
-router.post('/upload', protectRoute(), upload.single('image'), uploadDistributorLogo);
+router.patch('/upload', protectRoute(), upload.single('image'), uploadDistributorLogo);
 
 router.delete("/delete/:id", deleteDistributor);
 

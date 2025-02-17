@@ -13,38 +13,19 @@ export const locationSchema = new mongoose.Schema(
   },
   { _id: false }
 );
-
-export const contactSchema = new mongoose.Schema(
+export const commissionSchema = new mongoose.Schema(
   {
-    address: { type: String, required: true },
-    phoneNumbers: [
-      {
-        type: {
-          type: String,
-          enum: ["inquiry", "support"],
-          required: true,
-        },
-        number: {
-          type: String,
-          required: true,
-          unique: true,
-        },
-      },
-    ],
-    emails: [
-      {
-        type: {
-          type: String,
-          enum: ["support", "inquiry"],
-          required: true,
-        },
-        email: {
-          type: String,
-          required: true,
-          unique: true,
-        },
-      },
-    ],
+    address: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    rate: {
+      type: Number,
+      min: 0,
+      max: 100,
+      required: true,
+    },
   },
   { _id: false }
 );

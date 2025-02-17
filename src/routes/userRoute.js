@@ -23,6 +23,7 @@ import { resetLimiter } from "../utils/emailUtils.js";
 import multer from 'multer'
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
+
 router.post(
   "/register",
   registrationValidationRules,
@@ -54,8 +55,7 @@ router.post("/checkUnique", checkExistingAuthCredentials);
 
 router.post("/refresh", protectRoute(), initTokenRefresh);
 router.get("/user/status", initAuthStatus);
-router.post('/user/upload', protectRoute(), upload.single('image'), uploadProfileImage);
+router.patch('/user/upload', protectRoute(), upload.single('image'), uploadProfileImage);
 router.post("/logout", protectRoute(), initLogOut);
 
 export default router;
-

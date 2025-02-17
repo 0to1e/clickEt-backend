@@ -38,7 +38,7 @@ export const validateTheatre = [
       contacts.forEach((contact) => {
         if (contact.phoneNumbers) {
           contact.phoneNumbers.forEach((phone) => {
-            if (!["support", "inquiry"].includes(phone.type)) {
+            if (!["SUPPORT", "INQUIRY"].includes(phone.type)) {
               // Enum
               throw new Error("Invalid phone number type");
             }
@@ -50,9 +50,7 @@ export const validateTheatre = [
 
         if (contact.emails) {
           contact.emails.forEach((email) => {
-            if (!["support", "inquiry"].includes(email.type)) {
-              // Enum
-              // Enum
+            if (!["SUPPORT", "INQUIRY"].includes(email.type)) {
               throw new Error("Invalid email type");
             }
             if (
@@ -61,19 +59,6 @@ export const validateTheatre = [
               throw new Error("Invalid email format");
             }
           });
-        }
-      });
-      return true;
-    }),
-
-  body("hallIds")
-    .optional()
-    .isArray()
-    .withMessage("hallIds must be an array")
-    .custom((hallIds) => {
-      hallIds.forEach((id) => {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          throw new Error("Invalid hall ID");
         }
       });
       return true;

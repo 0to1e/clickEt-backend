@@ -6,7 +6,7 @@ const phoneNumberSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["Inquiry", "Support"],
+      enum: ["INQUIRY", "SUPPORT"],
     },
     number: {
       type: String,
@@ -22,7 +22,7 @@ const emailSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["Inquiry", "Support"],
+      enum: ["INQUIRY", "SUPPORT"],
     },
     email: {
       type: String,
