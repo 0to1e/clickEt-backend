@@ -38,7 +38,7 @@ export const validationRules = [
       contacts.forEach((contact) => {
         if (contact.phoneNumbers) {
           contact.phoneNumbers.forEach((phone) => {
-            if (!['Support', 'Inquiry'].includes(phone.type)) {
+            if (!['SUPPORT', 'INQUIRY'].includes(phone.type)) {
               // Enum
               throw new Error("Invalid phone number type");
             }
@@ -50,7 +50,7 @@ export const validationRules = [
 
         if (contact.emails) {
           contact.emails.forEach((email) => {
-            if (!["Support", "Inquiry"].includes(email.type)) {      // Enum
+            if (!["SUPPORT", "INQUIRY"].includes(email.type)) {      // Enum
               // Enum
               throw new Error("Invalid email type");
             }

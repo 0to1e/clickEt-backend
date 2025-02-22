@@ -11,7 +11,7 @@ const loggingMiddleware = (request, response, next) => {
     const logData = {
       requestuestType: request.method,
       endpoint: request.originalUrl,
-      payload: request.body,
+      // payload: request.body,
       responseTime,
       statusCode: response.statusCode,
       message: body,
