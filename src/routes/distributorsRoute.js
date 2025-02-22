@@ -8,6 +8,7 @@ import {
   deleteDistributor,
   getAllDistributors,
   getDistributorByName,
+  getDistributorsByMovieId,
   getDistributorsbyStatus,
   updateDistributor,
   uploadDistributorLogo,
@@ -29,6 +30,7 @@ router.post(
 router.get("/getAll", getAllDistributors);
 router.get("/", getDistributorByName);
 router.get("/getByStatus/:isActive", getDistributorsbyStatus);
+router.get("/getByMovie/:movieId", getDistributorsByMovieId);
 
 router.put(
   "/update/:id",
