@@ -6,6 +6,7 @@ import {
 
 export async function addDistributor(request, response) {
   const distributor_details = request.body;
+  console.log(distributor_details);
 
   try {
     const distributor = await Distributor.create(distributor_details);
@@ -75,6 +76,31 @@ export async function getDistributorByName(request, response) {
       .json({ message: "Internal Server Error. Check console for details" });
   }
 }
+
+export const getDistributorsByMovieId = async (req, res) => {
+  const { movieId } = req.params; // Extract movieId from request parameters
+
+  try {
+    // Find distributors that have distribution rights for the given movieId
+    const distributors = await Distributor.find({
+      "distributionRights.movieId": movieId,
+    }).populate({
+      path: "distributionRights.movieId",
+      select: "name", // Assuming the movie model has a title field
+    });
+
+    if (distributors.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No distributors found for this movie ID" });
+    }
+
+    res.status(200).json({ distributors: distributors });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 export async function getDistributorsByLocation(request, response) {
   const { location } = request.body;
   try {
