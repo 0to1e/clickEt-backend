@@ -157,27 +157,41 @@ export const screeningController = {
   //   }
   // },
 
-  getById: async (req, res) => {
+  getById: async (request, response) => {
     try {
-      const screening = await Screening.findById(req.params.id)
+      const screening = await Screening.findById(request.params.id)
         .populate("movieId", "name duration_min")
         .populate("theatreId", "name");
-      res.json(screening);
+      response.json(screening);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      response.status(500).json({ message: error.message });
     }
   },
-  getByMovie: async (req, res) => {
-    const { movieId } = req.params;
+  getByMovie: async (request, response) => {
+    const { movieId } = request.params;
+    console.log("🚀 ~ getByMovie: ~ movieId:", movieId)
     try {
-      const screening = await Screening.find({ movieId: movieId })
-        .select("-seatGrid")
-        .populate("movieId", "name duration_min")
-        .populate("theatreId", "name")
-        .populate("hallId", "name");
-      res.json(screening);
+      // Fetch screenings by movieId
+      const screenings = await Screening.find({ movieId: movieId })
+        .select("-seatGrid") // Exclude seatGrid for performance reasons
+        .populate("movieId", "name duration_min") // Populate movieId with name and duration_min
+        .populate("theatreId", "name") // Populate theatreId with name
+        .populate("hallId", "name") // Populate hallId with name
+        .populate("distributorId", "name"); // Populate distributorId with name
+  
+      // Check if any screenings were found
+      if (screenings.length === 0) {
+        return response.status(404).json({ message: "No screenings found for the given movie" });
+      }
+  
+      // Log the fetched screenings for debugging
+      console.log("Fetched Screenings:", screenings);
+  
+      // Return the screenings
+      response.json(screenings);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error("Error fetching screenings:", error);
+      response.status(500).json({ message: error.message });
     }
   },
 
@@ -256,12 +270,14 @@ export const screeningController = {
     }
   },
 
-  getLayoutByid: async (req, res) => {
+  getLayoutByid: async (request, response) => {
     try {
-      const screening = await Screening.findById(req.params.id);
-      res.status(200).json({ message: screening.seatGrid });
+      const screening = await Screening.findById(request.params.id);
+      response
+        .status(200)
+        .json({ seatGrid: screening.seatGrid, price: screening.basePrice });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      response.status(500).json({ message: error.message });
     }
   },
 

@@ -35,6 +35,7 @@ router.get(
 );
 
 router.get("/:id", screeningValidation.getById, screeningController.getById);
+router.get("/byMovie/:movieId", screeningValidation.getById, screeningController.getByMovie);
 router.get("/:id/layout", screeningController.getLayoutByid);
 
 export default router;

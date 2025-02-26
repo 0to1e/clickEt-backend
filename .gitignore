@@ -9,6 +9,7 @@ logs/
 *.log
 *.log.*
 
+
 # Dependency directories
 pnpm-lock.yaml
 yarn.lock
@@ -38,6 +39,10 @@ Thumbs.db
 *.tgz
 *.bak
 *.swp
+*.sh
+*.pdf
+*.txt
+*.png
 
 # Vite Dev server socket
 .vite-dev-server/

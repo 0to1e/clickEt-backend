@@ -7,7 +7,7 @@ import {
   cleanupExpiredHolds,
   updateScreeningSeats,
 } from "../utils/bookingSchemaUtils/bookingUtils.js";
-import generatePdf from '../utils/pdfUtils/pdfGenerator.js'
+import generatePdf from "../utils/pdfUtils/pdfGenerator.js";
 
 export const bookingController = {
   // Hold seats
