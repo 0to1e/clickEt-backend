@@ -9,13 +9,20 @@ const paymentSchema = new mongoose.Schema(
     },
     modeOfPayment: {
       type: String,
-      enum: ["BANK", "CASH", "ESEWA", "KHALTI"],
+      enum: ["KHALTI"],
       required: true,
     },
     screeningId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Screening",
       required: true,
+    },
+    bookingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "bookings",
+    },
+    pidx: {
+      type: String,
     },
     date: { type: Date, required: true },
     time: { type: Date, required: true },

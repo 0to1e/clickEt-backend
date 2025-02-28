@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { contactSchema } from "./fieldTypeSchemas/distributorSchemas/contactSchemas.js";
+import { contactSchema } from "./fieldTypeSchemas/common/contactSchemas.js";
 import { locationSchema } from "./fieldTypeSchemas/distributorSchemas/locationSchema.js";
 import { distributionRightSchema } from "./fieldTypeSchemas/distributorSchemas/distributorRights.js";
 

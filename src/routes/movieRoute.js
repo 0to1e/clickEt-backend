@@ -11,17 +11,16 @@ import {
   getAllMovies,
   getMovieById,
   getMoviesByStatus,
-  updateMoviesWithSlugs,
   getMovieBySlug,
 } from "../controller/moviesController.js";
 
 const router = express.Router();
 
-router.post("/add", validationRules, commonlyUsedValidationResult , addMovie);
+router.post("/add", validationRules, commonlyUsedValidationResult, addMovie);
 
 router.get("/getAll", getAllMovies);
 router.get("/:slug", getMovieBySlug);
-router.post("/getById/:movieId",getMovieById); 
+router.post("/getById/:movieId", getMovieById);
 router.get("/status/:status", getMoviesByStatus);
 
 router.put(
@@ -32,7 +31,6 @@ router.put(
   updateMovie
 );
 
-router.post("/updateAll", updateMoviesWithSlugs);
 
 router.delete("/delete/:id", deleteMovie);
 

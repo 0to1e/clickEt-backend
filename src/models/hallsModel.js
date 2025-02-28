@@ -1,20 +1,60 @@
+import mongoose from "mongoose";
+
+const seatSectionSchema = new mongoose.Schema(
+  {
+    rows: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    columns: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    startRow: {
+      type: String,
+      required: true,
+      default: "A",
+    },
+    startNumber: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
+  },
+  { _id: false }
+);
+
+
 const hallSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
     theatreId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Theatre",
+      ref: "theatres",
       required: true,
     },
-    totalSeats: { type: Number, required: true },
-    isUsed: { type: Boolean, default: false },
-    isActive: { type: Boolean, default: true },
+    location: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    layout: {
+      sections: [seatSectionSchema],
+    },
+    totalSeats: {
+      type: Number,
+      default: 0,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export const Hall = mongoose.model("halls", hallSchema);
-
-

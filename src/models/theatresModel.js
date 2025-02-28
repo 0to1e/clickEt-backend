@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import {
-  contactSchema,
+  commissionSchema,
   locationSchema,
 } from "../models/fieldTypeSchemas/theatreSchemas/theatreSchemas.js";
+import { contactSchema } from "./fieldTypeSchemas/common/contactSchemas.js";
+
 const theatreSchema = new mongoose.Schema(
   {
     name: {
@@ -11,29 +13,8 @@ const theatreSchema = new mongoose.Schema(
       unique: true,
     },
     locations: [locationSchema],
+    commissionRate: [commissionSchema],
     contacts: [contactSchema],
-    hallIds: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "halls",
-        required: false,
-      },
-    ],
-    commissionRate: [
-      {
-        address: {
-          type: String,
-          required: true,
-          unique: true,
-        },
-        rate: {
-          type: Number,
-          min: 0,
-          max: 100,
-          required: true,
-        },
-      },
-    ],
     isActive: { type: Boolean, required: true, default: true },
   },
   { timestamps: true }

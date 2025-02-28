@@ -1,12 +1,17 @@
 import mongoose from "mongoose";
-import { app } from "./src/app.js";
+import app from "./src/app.js";
 
-try {
-  mongoose.connect("mongodb://localhost:27017/bookEt").then(() => {
-    app.listen(process.env.BACK_PORT, () => {
-      console.log(`Listening on PORT ${process.env.BACK_PORT}`);
+const port = process.env.BACK_PORT || 8080;
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log(`MongoDB connected to ${process.env.MONGODB_URI}`);
+    const server = app.listen(port, () => {
+      console.log(`Listening on PORT ${port}`);
     });
+    app.set("server", server);
+  })
+  .catch((error) => {
+    console.error(`Mongoose Connection Error.\nError: ${error.message}`);
   });
-} catch (error) {
-  console.error(`Mongoose Connection Error.\nError:${error.message}`);
-}

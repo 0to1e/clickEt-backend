@@ -9,6 +9,7 @@ import {
 import { commonlyUsedValidationResult } from "../utils/prettyValidationResult.js";
 import {
   checkExistingAuthCredentials,
+  deleteUser,
   initAuthStatus,
   initAuthentication,
   initLogOut,
@@ -16,13 +17,14 @@ import {
   initTokenRefresh,
   resetPassword,
   sendResetEmail,
-  uploadProfileImage
+  uploadProfileImage,
 } from "../controller/authController.js";
 import { protectRoute } from "../middleware/auth/routeProtection.js";
 import { resetLimiter } from "../utils/emailUtils.js";
-import multer from 'multer'
+import multer from "multer";
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
+
 router.post(
   "/register",
   registrationValidationRules,
@@ -51,11 +53,17 @@ router.post(
 );
 
 router.post("/checkUnique", checkExistingAuthCredentials);
+router.post("/checkUnique", checkExistingAuthCredentials);
 
 router.post("/refresh", protectRoute(), initTokenRefresh);
 router.get("/user/status", initAuthStatus);
-router.post('/user/upload', protectRoute(), upload.single('image'), uploadProfileImage);
+router.patch(
+  "/user/upload",
+  protectRoute(),
+  upload.single("image"),
+  uploadProfileImage
+);
 router.post("/logout", protectRoute(), initLogOut);
+router.delete("/delete/:user_name", deleteUser);
 
 export default router;
-
