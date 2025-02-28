@@ -2,7 +2,6 @@
 import express from "express";
 import { bookingController } from "../controller/bookingController.js";
 import { protectRoute } from "../middleware/auth/routeProtection.js";
-import generatePdf from "../utils/pdfUtils/pdfGenerator.js";
 
 const router = express.Router();
 
@@ -18,9 +17,11 @@ router.delete(
   bookingController.releaseHold
 );
 router.get(
-  "/bookings/history",
+  "/history",
   protectRoute(),
   bookingController.getBookingHistory
 );
+
+router.delete("/delete/:id", bookingController.deleteBookingById)
 
 export default router;

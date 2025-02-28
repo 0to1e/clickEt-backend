@@ -1,4 +1,4 @@
-// src/app.js
+//src/app.js
 import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors";
@@ -22,7 +22,6 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(loggingMiddleware);
 
-
 import userRoute from "./routes/userRoute.js";
 import moviesRoute from "./routes/movieRoute.js";
 import distributorRoute from "./routes/distributorsRoute.js";
@@ -41,14 +40,20 @@ app.use(`${apiVersion}/hall`, hallRoute);
 app.use(`${apiVersion}/screening`, screeningRoute);
 app.use(`${apiVersion}/booking`, bookingRoute);
 app.use(`${apiVersion}/payments`, paymentRoute);
-
+app.use(`${apiVersion}/health`, (request, response) => {
+  response.status(200).json({ status: "OK" });
+});
 
 // Cron job to cleanup expired holds
-cron.schedule("*/5 * * * *", () => {
-  cleanupExpiredHolds();
-}, {
-  scheduled: true,
-  timezone: "UTC"
-});
+cron.schedule(
+  "*/5 * * * *",
+  () => {
+    cleanupExpiredHolds();
+  },
+  {
+    scheduled: true,
+    timezone: "UTC",
+  }
+);
 
 export default app;

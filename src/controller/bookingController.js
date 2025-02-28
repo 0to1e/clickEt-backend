@@ -1,6 +1,6 @@
 // src/controllers/bookingController.js
 import { Booking } from "../models/bookingModel.js";
-import { Screening } from "../models/screeningModel.js";
+import { Screening } from '../models/screeningModel.js';
 import crypto from "crypto";
 import { getUserIdFromToken, isValidObjectId } from "../utils/tokenUtils.js";
 import {
@@ -363,6 +363,7 @@ export const bookingController = {
       response.status(500).json({ message: error.message });
     }
   },
+  
   downloadTicket: async (request, response) => {
     try {
       // Simulate booking confirmation data
@@ -398,6 +399,27 @@ export const bookingController = {
     } catch (error) {
       console.error("Error confirming booking:", error);
       response.status(500).json({ message: "Error confirming booking" });
+    }
+  },
+
+  getAllBookings: async (request, response) => {
+    try {
+      const bookings = await Booking.find();
+      response.status(200).json(bookings);
+    } catch (error) {
+      response.status(500).json({ message: "Server error", error: error.message });
+    }
+  },
+
+  
+  deleteBookingById: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const deletedBooking = await Booking.findByIdAndDelete(id);
+      if (!deletedBooking) return response.status(404).json({ message: "Booking not found" });
+      response.status(200).json({ message: "Booking deleted successfully" });
+    } catch (error) {
+      response.status(500).json({ message: "Server error", error: error.message });
     }
   },
 };

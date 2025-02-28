@@ -5,7 +5,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --env-file=.env --env-file=.env.test --exit",
+    "test": "mocha --env-file=.env --env-file=.env.development --exit",
     "serve": "nodemon --env-file=.env --env-file=.env.development  server.js"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
     "backblaze-b2": "^1.7.0",
     "bcrypt": "^5.1.1",
     "chai": "4.3.7",
+    "chai-http": "^5.1.1",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -38,8 +39,10 @@
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7",
     "pdfkit": "^0.16.0",
+    "proxyquire": "^2.1.3",
     "qrcode": "^1.5.4",
     "sharp": "^0.33.5",
+    "sinon": "^19.0.2",
     "slugify": "^1.6.6",
     "supertest": "^7.0.0",
     "uuid": "^11.0.5",

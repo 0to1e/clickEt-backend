@@ -11,7 +11,6 @@ import {
   getAllMovies,
   getMovieById,
   getMoviesByStatus,
-  updateMoviesWithSlugs,
   getMovieBySlug,
 } from "../controller/moviesController.js";
 
@@ -32,7 +31,6 @@ router.put(
   updateMovie
 );
 
-router.post("/updateAll", updateMoviesWithSlugs);
 
 router.delete("/delete/:id", deleteMovie);
 

@@ -55,13 +55,11 @@ export async function initAuthentication(request, response) {
         setTokenCookie(response, "refresh_token", refreshToken);
         setTokenCookie(response, "access_token", accessToken);
 
-        return response
-          .status(200)
-          .json({
-            message: "Login Successful",
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-          });
+        return response.status(200).json({
+          message: "Login Successful",
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        });
       }
       return response.status(401).json({ message: "Invalid Password" });
     }
@@ -276,6 +274,24 @@ export async function listAllUsers(request, response) {
   }
 }
 
+export async function deleteUser(request, response) {
+  try {
+    const { user_name } = request.params;
+    
+    const user = await User.findOneAndDelete({ user_name });
+
+    if (!user) {
+      return response.status(404).json({ message: "User not found" });
+    }
+
+    return response.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(`Delete User Error: ${error.message}`);
+    return response.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+}
+
+
 export async function uploadProfileImage(request, response) {
   const token = request.cookies.access_token;
   if (!token) {
@@ -310,5 +326,15 @@ export async function uploadProfileImage(request, response) {
   } catch (error) {
     console.error("Error uploading profile image:", error);
     return response.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getUserProfile(request, response) {
+  try {
+    const user = await User.findById(request.user.id).select("-password");
+    if (!user) return response.status(404).json({ message: "User not found" });
+    response.status(200).json(user);
+  } catch (error) {
+    response.status(500).json({ message: "Server error", error: error.message });
   }
 }

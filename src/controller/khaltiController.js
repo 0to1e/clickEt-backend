@@ -310,6 +310,15 @@ export const khaltiController = {
       });
     }
   },
+
+  getAllPayments: async (request, response) => {
+    try {
+      const payments = await Payment.find();
+      response.status(200).json(payments);
+    } catch (error) {
+      response.status(500).json({ message: "Server error", error: error.message });
+    }
+  },
 };
 
 export default khaltiController;

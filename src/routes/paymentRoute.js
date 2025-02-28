@@ -9,5 +9,6 @@ const router = express.Router();
 router.post("/khalti/initiate",protectRoute(), khaltiController.initiatePayment);
 router.post("/khalti/verify", protectRoute(), khaltiController.verifyPayment);
 router.get("/khalti/status/:pidx", protectRoute(), khaltiController.getPaymentStatus);
+router.get("/khalti/getAll", protectRoute(), khaltiController.getAllPayments);
 
 export default router;
