@@ -17,11 +17,11 @@ import {
 
 const router = express.Router();
 
-router.post("/add", validationRules, commonlyUsedValidationResult , addMovie);
+router.post("/add", validationRules, commonlyUsedValidationResult, addMovie);
 
 router.get("/getAll", getAllMovies);
 router.get("/:slug", getMovieBySlug);
-router.post("/getById/:movieId",getMovieById); 
+router.post("/getById/:movieId", getMovieById);
 router.get("/status/:status", getMoviesByStatus);
 
 router.put(

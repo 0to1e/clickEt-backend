@@ -4,9 +4,9 @@ import app from "./src/app.js";
 const port = process.env.BACK_PORT || 8080;
 
 mongoose
-  .connect("mongodb://localhost:27017/bookEt")
+  .connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log("MongoDB connected");
+    console.log(`MongoDB connected to ${process.env.MONGODB_URI}`);
     const server = app.listen(port, () => {
       console.log(`Listening on PORT ${port}`);
     });

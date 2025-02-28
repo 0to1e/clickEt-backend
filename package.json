@@ -5,8 +5,8 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "nodemon --env-file=.env server.js"
+    "test": "mocha --env-file=.env --env-file=.env.test --exit",
+    "serve": "nodemon --env-file=.env --env-file=.env.development  server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "axios": "^1.7.9",
     "backblaze-b2": "^1.7.0",
     "bcrypt": "^5.1.1",
+    "chai": "4.3.7",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "khalti-checkout-web": "^2.2.0",
     "libphonenumber-js": "^1.11.14",
+    "mocha": "^11.1.0",
     "mongoose": "^8.9.3",
     "morgan": "^1.10.0",
     "multer": "1.4.5-lts.1",
@@ -39,6 +41,7 @@
     "qrcode": "^1.5.4",
     "sharp": "^0.33.5",
     "slugify": "^1.6.6",
+    "supertest": "^7.0.0",
     "uuid": "^11.0.5",
     "winston": "^3.17.0",
     "ytdl-core": "npm:@distube/ytdl-core@^4.15.9"
