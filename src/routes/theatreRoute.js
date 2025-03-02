@@ -11,9 +11,16 @@ import {
   updateTheatre,
   deleteTheatre,
 } from "../controller/theatreController.js";
+import { protectRoute } from "../middleware/auth/routeProtection.js";
 const router = express.Router();
 
-router.post("/add", validateTheatre, commonlyUsedValidationResult, addTheatre);
+router.post(
+  "/add",
+  validateTheatre,
+  commonlyUsedValidationResult,
+  protectRoute(["ADMIN"]),
+  addTheatre
+);
 
 router.get("/getAll", getAllTheatres);
 router.post("/getByName", getTheatreByName);
@@ -24,9 +31,10 @@ router.put(
   "/update/:id",
   validateTheatre,
   commonlyUsedValidationResult,
+  protectRoute(["ADMIN"]),
   updateTheatre
 );
 
-router.delete("/delete/:id", deleteTheatre);
+router.delete("/delete/:id", protectRoute(["ADMIN"]), deleteTheatre);
 
 export default router;

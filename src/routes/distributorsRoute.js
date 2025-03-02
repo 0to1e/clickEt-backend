@@ -21,26 +21,52 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   "/add",
-  // protectRoute(["ADMIN"]),
+  protectRoute(["ADMIN"]),
   validationRules,
   commonlyUsedValidationResult,
   addDistributor
 );
 
-router.get("/getAll", getAllDistributors);
-router.get("/", getDistributorByName);
-router.get("/getByStatus/:isActive", getDistributorsbyStatus);
+router.get(
+  "/getAll",
+  protectRoute(["ADMIN"]),
+
+  getAllDistributors
+);
+router.get(
+  "/",
+  protectRoute(["ADMIN"]),
+
+  getDistributorByName
+);
+router.get(
+  "/getByStatus/:isActive",
+  protectRoute(["ADMIN"]),
+
+  getDistributorsbyStatus
+);
 router.get("/getByMovie/:movieId", getDistributorsByMovieId);
 
 router.put(
   "/update/:id",
   validationRules,
   commonlyUsedValidationResult,
+  protectRoute(["ADMIN"]),
   updateDistributor
 );
-router.patch('/upload', protectRoute(), upload.single('image'), uploadDistributorLogo);
+router.patch(
+  "/upload",
+  protectRoute(["ADMIN"]),
+  upload.single("image"),
+  uploadDistributorLogo
+);
 
-router.delete("/delete/:id", deleteDistributor);
+router.delete("/delete/:id", protectRoute(["ADMIN"]), deleteDistributor);
 
-router.post("/checkUnique", checkUniqueDistributors);
+router.post(
+  "/checkUnique",
+  protectRoute(["ADMIN"]),
+
+  checkUniqueDistributors
+);
 export default router;

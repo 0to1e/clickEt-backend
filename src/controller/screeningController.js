@@ -169,7 +169,6 @@ export const screeningController = {
   },
   getByMovie: async (request, response) => {
     const { movieId } = request.params;
-    console.log("🚀 ~ getByMovie: ~ movieId:", movieId)
     try {
       // Fetch screenings by movieId
       const screenings = await Screening.find({ movieId: movieId })
@@ -183,10 +182,7 @@ export const screeningController = {
       if (screenings.length === 0) {
         return response.status(404).json({ message: "No screenings found for the given movie" });
       }
-  
-      // Log the fetched screenings for debugging
-      console.log("Fetched Screenings:", screenings);
-  
+    
       // Return the screenings
       response.json(screenings);
     } catch (error) {

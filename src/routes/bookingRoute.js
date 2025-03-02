@@ -5,23 +5,44 @@ import { protectRoute } from "../middleware/auth/routeProtection.js";
 
 const router = express.Router();
 
-router.post("/hold", protectRoute(), bookingController.holdSeats);
+router.post("/hold", protectRoute(["USER"]), bookingController.holdSeats);
 
-router.post("/confirm", protectRoute(), bookingController.confirmBooking);
-router.post("/download", protectRoute(), bookingController.downloadTicket);
+router.post(
+  "/confirm",
+  protectRoute(["USER"]),
+  bookingController.confirmBooking
+);
+router.post(
+  "/download",
+  protectRoute(["USER"]),
+  bookingController.downloadTicket
+);
 
-router.get("/holds/getAll", protectRoute(), bookingController.getActiveHolds);
+router.get(
+  "/getAll",
+  protectRoute(["ADMIN"]),
+  bookingController.getAllBookings
+);
+router.get(
+  "/holds/getAll",
+  protectRoute(["USER"]),
+  bookingController.getActiveHolds
+);
 router.delete(
   "/hold/release/:holdId",
-  protectRoute(),
+  protectRoute(["USER"]),
   bookingController.releaseHold
 );
 router.get(
   "/history",
-  protectRoute(),
+  protectRoute(["USER"]),
   bookingController.getBookingHistory
 );
 
-router.delete("/delete/:id", bookingController.deleteBookingById)
+router.delete(
+  "/delete/:id",
+  protectRoute(["ADMIN"]),
+  bookingController.deleteBookingById
+);
 
 export default router;
