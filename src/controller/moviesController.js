@@ -207,3 +207,28 @@ export async function deleteMovie(request, response) {
       .json({ message: "Internal Server Error. Check console for details" });
   }
 }
+
+export const toggleMovieStatus = async (request, response) => {
+  try {
+    const { movie_id } = request.params;
+
+    const movie = await Movie.findById({ _id: movie_id });
+    if (!movie) {
+      return response.status(404).json({ error: "Movie not found" });
+    }
+
+    // Toggle the isActive status
+    movie.status = movie.status === "upcoming" ? "showing" : "upcoming";
+    await movie.save();
+
+    return response.status(200).json({
+      message: `Movie set to ${movie.status} successfully`,
+      movie,
+    });
+  } catch (error) {
+    console.error("Error toggling movie status:", error);
+    return response
+      .status(500)
+      .json({ error: "Failed to toggle movie status" });
+  }
+};
