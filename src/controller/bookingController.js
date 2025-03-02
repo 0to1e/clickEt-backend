@@ -1,6 +1,5 @@
-// src/controllers/bookingController.js
 import { Booking } from "../models/bookingModel.js";
-import { Screening } from '../models/screeningModel.js';
+import { Screening } from "../models/screeningModel.js";
 import crypto from "crypto";
 import { getUserIdFromToken, isValidObjectId } from "../utils/tokenUtils.js";
 import {
@@ -55,7 +54,7 @@ export const bookingController = {
       const invalidSeats = [];
 
       for (const seat of seats) {
-        const { section, row, seatNumber } = seat;
+        const { section, row, seatNumber, seatId } = seat;
 
         if (!screening.seatGrid[section]) {
           invalidSeats.push(`Section ${section} does not exist`);
@@ -76,7 +75,7 @@ export const bookingController = {
 
         const seatStatus = screening.seatGrid[section].rows[row][seatNumber];
         if (seatStatus.code !== "a") {
-          unavailableSeats.push(`${section}-${row}-${seatNumber}`);
+          unavailableSeats.push(seatId || `${section}-${row}-${seatNumber}`);
         }
       }
 
@@ -93,6 +92,15 @@ export const bookingController = {
         });
       }
 
+      const finalPriceInt = parseInt(screening.finalPrice, 10);
+      if (isNaN(finalPriceInt)) {
+        return response
+          .status(500)
+          .json({ message: "Invalid screening final price" });
+      }
+      const totalPrice = seats.length * finalPriceInt;
+      const amountForPayment = totalPrice * 100;
+
       // Create hold booking
       const holdExpiry = new Date(Date.now() + holdDuration * 1000);
       const booking = await Booking.create({
@@ -102,7 +110,7 @@ export const bookingController = {
         status: "held",
         holdId,
         holdExpiresAt: holdExpiry,
-        totalPrice: seats.length * screening.finalPrice,
+        amountForPayment,
       });
 
       // Update screening seats
@@ -272,11 +280,18 @@ export const bookingController = {
       };
       await booking.save();
 
-      // Format seats for response
+      // Format seats for response using the seatId from the model
       const formattedSeats = booking.seats.map((seat) => ({
         section: seat.section,
-        row: String.fromCharCode(65 + seat.row), // Convert row number to letter (0 = A, 1 = B, etc.)
-        seatNumber: seat.seatNumber + 1, // If your seat numbers are 0-based
+        row: seat.seatId
+          ? seat.seatId.charAt(0)
+          : String.fromCharCode(65 + seat.row),
+        seatNumber: seat.seatId
+          ? parseInt(seat.seatId.substring(1))
+          : seat.seatNumber + 1,
+        seatId:
+          seat.seatId ||
+          `${String.fromCharCode(65 + seat.row)}${seat.seatNumber + 1}`,
       }));
 
       // Format date and time
@@ -355,35 +370,160 @@ export const bookingController = {
         userId,
         status: { $in: ["confirmed", "cancelled"] },
       })
-        .populate("screeningId", "movieId startTime")
+        .populate({
+          path: "userId",
+          select: "full_name",
+        })
+        .populate({
+          path: "screeningId",
+          populate: [
+            {
+              path: "movieId",
+              select: "name posterURL.sm",
+            },
+            {
+              path: "theatreId",
+              select: "name",
+            },
+            {
+              path: "hallId",
+              select: "name",
+            },
+          ],
+          select: "startTime",
+        })
+        // If you have a separate Payment model linked to bookings
+        .populate({
+          path: "paymentInfo",
+          select: "modeOfPayment",
+        })
         .sort({ createdAt: -1 });
 
-      response.json(bookings);
+      const formattedBookings = bookings.map((booking) => {
+        return {
+          bookingId: booking._id,
+          confirmationCode:
+            booking.confirmationDetails?.confirmationCode || null,
+          status: booking.status,
+          totalPrice: booking.totalPrice,
+          createdAt: booking.createdAt,
+          user: {
+            fullName: booking.userId.full_name,
+          },
+          screening: {
+            date: booking.screeningId.startTime,
+            movieName: booking.screeningId.movieId.name,
+            posterUrl: booking.screeningId.movieId.posterURL.sm,
+            theatreName: booking.screeningId.theatreId.name,
+            hallName: booking.screeningId.hallId.name,
+          },
+          payment: booking.paymentInfo
+            ? {
+                method: booking.paymentInfo.paymentMethod,
+                paidAmount: booking.paymentInfo.paidAmount,
+                paidAt: booking.paymentInfo.paidAt,
+              }
+            : null,
+          seats: booking.seats.map((seat) => ({
+            seatId:
+              seat.seatId ||
+              `${String.fromCharCode(65 + seat.row)}${seat.seatNumber + 1}`,
+            section: seat.section,
+            row: seat.row,
+            seatNumber: seat.seatNumber,
+          })),
+        };
+      });
+
+      response.json(formattedBookings);
     } catch (error) {
+      console.error("Get booking history error:", error);
       response.status(500).json({ message: error.message });
     }
   },
-  
+
   downloadTicket: async (request, response) => {
     try {
-      // Simulate booking confirmation data
-      const bookingData = {
-        message: "Booking confirmed successfully",
-        confirmationCode: "92ADEF38",
-        bookingDetails: {
-          movieName: "Purna Bahadur ko Sarangi",
-          date: "Saturday, February 22, 2025",
-          startTime: "12:19 AM",
-          distributorName: "Rohan",
-          theatreName: "KL Tower",
-          hallName: "Hall Platinum",
-          seats: [
-            { section: 1, row: "E", seatNumber: 3 },
-            { section: 1, row: "E", seatNumber: 4 },
+      const { bookingId } = request.params;
+
+      // If a booking ID is provided, fetch the real booking data
+      let bookingData;
+      if (bookingId && isValidObjectId(bookingId)) {
+        const booking = await Booking.findById(bookingId).populate({
+          path: "screeningId",
+          populate: [
+            { path: "movieId", select: "name" },
+            { path: "distributorId", select: "name" },
+            { path: "theatreId", select: "name" },
+            { path: "hallId", select: "name" },
           ],
-          totalPrice: 696,
-        },
-      };
+        });
+
+        if (!booking) {
+          return response.status(404).json({ message: "Booking not found" });
+        }
+
+        // Format seats for PDF
+        const formattedSeats = booking.seats.map((seat) => ({
+          section: seat.section,
+          row: seat.seatId
+            ? seat.seatId.charAt(0)
+            : String.fromCharCode(65 + seat.row),
+          seatNumber: seat.seatId
+            ? parseInt(seat.seatId.substring(1))
+            : seat.seatNumber + 1,
+          seatId:
+            seat.seatId ||
+            `${String.fromCharCode(65 + seat.row)}${seat.seatNumber + 1}`,
+        }));
+
+        // Format date and time
+        const screeningDate = new Date(booking.screeningId.startTime);
+        const formattedDate = screeningDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        const formattedTime = screeningDate.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        bookingData = {
+          message: "Booking confirmed successfully",
+          confirmationCode: booking.confirmationDetails.confirmationCode,
+          bookingDetails: {
+            movieName: booking.screeningId.movieId.name,
+            date: formattedDate,
+            startTime: formattedTime,
+            distributorName: booking.screeningId.distributorId.name,
+            theatreName: booking.screeningId.theatreId.name,
+            hallName: booking.screeningId.hallId.name,
+            seats: formattedSeats,
+            totalPrice: booking.totalPrice,
+          },
+        };
+      } else {
+        // Use sample data for testing if no booking ID provided
+        bookingData = {
+          message: "Booking confirmed successfully",
+          confirmationCode: "92ADEF38",
+          bookingDetails: {
+            movieName: "Purna Bahadur ko Sarangi",
+            date: "Saturday, February 22, 2025",
+            startTime: "12:19 AM",
+            distributorName: "Rohan",
+            theatreName: "KL Tower",
+            hallName: "Hall Platinum",
+            seats: [
+              { section: 1, row: "E", seatNumber: 3, seatId: "E3" },
+              { section: 1, row: "E", seatNumber: 4, seatId: "E4" },
+            ],
+            totalPrice: 696,
+          },
+        };
+      }
 
       // Generate PDF
       const pdfPath = "booking_confirmation.pdf";
@@ -397,8 +537,8 @@ export const bookingController = {
         }
       });
     } catch (error) {
-      console.error("Error confirming booking:", error);
-      response.status(500).json({ message: "Error confirming booking" });
+      console.error("Error generating ticket:", error);
+      response.status(500).json({ message: "Error generating ticket" });
     }
   },
 
@@ -407,19 +547,23 @@ export const bookingController = {
       const bookings = await Booking.find();
       response.status(200).json(bookings);
     } catch (error) {
-      response.status(500).json({ message: "Server error", error: error.message });
+      response
+        .status(500)
+        .json({ message: "Server error", error: error.message });
     }
   },
 
-  
   deleteBookingById: async (request, response) => {
     try {
       const { id } = request.params;
       const deletedBooking = await Booking.findByIdAndDelete(id);
-      if (!deletedBooking) return response.status(404).json({ message: "Booking not found" });
+      if (!deletedBooking)
+        return response.status(404).json({ message: "Booking not found" });
       response.status(200).json({ message: "Booking deleted successfully" });
     } catch (error) {
-      response.status(500).json({ message: "Server error", error: error.message });
+      response
+        .status(500)
+        .json({ message: "Server error", error: error.message });
     }
   },
 };
