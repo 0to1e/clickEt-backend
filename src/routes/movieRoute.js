@@ -12,7 +12,9 @@ import {
   getMovieById,
   getMoviesByStatus,
   getMovieBySlug,
+  toggleMovieStatus,
 } from "../controller/moviesController.js";
+import { protectRoute } from "../middleware/auth/routeProtection.js";
 
 const router = express.Router();
 
@@ -21,6 +23,7 @@ router.post("/add", validationRules, commonlyUsedValidationResult, addMovie);
 router.get("/getAll", getAllMovies);
 router.get("/:slug", getMovieBySlug);
 router.post("/getById/:movieId", getMovieById);
+router.patch("/toggle/:movie_id", protectRoute(["ADMIN"]), toggleMovieStatus);
 router.get("/status/:status", getMoviesByStatus);
 
 router.put(
@@ -28,13 +31,11 @@ router.put(
   checkAndFormatDate,
   validationRules,
   commonlyUsedValidationResult,
+  protectRoute(["ADMIN"]),
   updateMovie
 );
 
-
-router.delete("/delete/:id", deleteMovie);
-
-router.delete("/delete/:id", deleteMovie);
+router.delete("/delete/:id", protectRoute("ADMIN"), deleteMovie);
 
 router.post("/checkUnique", checkUniqueMovies);
 export default router;
