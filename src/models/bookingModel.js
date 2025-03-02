@@ -18,6 +18,7 @@ const bookingSchema = new mongoose.Schema(
         section: Number,
         row: Number,
         seatNumber: Number,
+        seatId:String
       },
     ],
     totalPrice: {
